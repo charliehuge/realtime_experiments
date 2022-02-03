@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <functional>
+#include "../common/SPSCQ.h"
 
 template<class CbData>
 class ThingWithCb {
@@ -51,4 +52,31 @@ protected:
 
 private:
   std::atomic_flag _usingCb = ATOMIC_FLAG_INIT;
+};
+
+template<class CbData>
+class ThingWithCbAndSPSCQ : public ThingWithCb<CbData> {
+public:
+  explicit ThingWithCbAndSPSCQ() : _q(8) {}
+
+  using Cb = typename  ThingWithCb<CbData>::Cb;
+
+  void setCb(const Cb& cb) override {
+    _q.push(cb);
+  }
+
+protected:
+  using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
+
+  void useCb(const PostAcquireFiller& postAcquireFiller) override {
+    // drain the queue
+    while (_q.pop(this->_cb));
+    if (this->_cb != nullptr) {
+      postAcquireFiller();
+      this->_cb(CbData());
+    }
+  }
+
+private:
+  SPSCQ<Cb> _q;
 };

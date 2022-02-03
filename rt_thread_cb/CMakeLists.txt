@@ -4,6 +4,7 @@ set(target rt_thread_cb)
 file(GLOB src *.h *.cpp)
 add_library(${target} SHARED ${src})
 set_target_properties(${target} PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(${target} common)
 
 if (MSVC)
     target_compile_options(${target} PUBLIC /W4 /WX)

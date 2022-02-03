@@ -30,4 +30,5 @@ FetchContent_MakeAvailable(gbenchmark)
 
 enable_testing()
 
+add_subdirectory(common)
 add_subdirectory(rt_thread_cb)
