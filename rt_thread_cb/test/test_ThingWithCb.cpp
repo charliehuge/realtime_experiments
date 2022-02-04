@@ -5,7 +5,9 @@
 using CbData = double;
 using TestTypes = ::testing::Types<
     ThingWithCbAndSpinlock<CbData>,
-    ThingWithCbAndSPSCQ<CbData>, ThingWithCbAndEyalAmirFifo<CbData>
+    ThingWithCbAndSPSCQ<CbData>,
+    ThingWithCbAndEyalAmirFifo<CbData>,
+    ThingWithCbAndMoodycamelReaderWriterQueue<CbData>
     >;
 
 template <class T>

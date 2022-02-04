@@ -3,6 +3,7 @@
 #include <atomic>
 #include <functional>
 #include "ea_data_structures.h"
+#include "readerwriterqueue.h"
 #include "../common/SPSCQ.h"
 
 template<class CbData>
@@ -102,4 +103,28 @@ protected:
 
 private:
   EA::Fifo<Cb, 5> _q;
+};
+
+template<class CbData>
+class ThingWithCbAndMoodycamelReaderWriterQueue : public ThingWithCb<CbData> {
+public:
+  using Cb = typename  ThingWithCb<CbData>::Cb;
+
+  void setCb(const Cb& cb) override {
+    _q.enqueue(cb);
+  }
+
+protected:
+  using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
+
+  void useCb(const PostAcquireFiller& postAcquireFiller) override {
+    while (_q.try_dequeue(this->_cb));
+    if (this->_cb != nullptr) {
+      postAcquireFiller();
+      this->_cb(CbData());
+    }
+  }
+
+private:
+  moodycamel::ReaderWriterQueue<Cb> _q;
 };

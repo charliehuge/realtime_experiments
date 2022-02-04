@@ -38,6 +38,7 @@ static void ThingWithCb_SetUnset(benchmark::State& state) {
 BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSpinlock<CbData>>);
 BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSPSCQ<CbData>>);
 BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndEyalAmirFifo<CbData>>);
+BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndMoodycamelReaderWriterQueue<CbData>>);
 
 template<class ConcreteThingWithCb>
 static void ThingWithCb_Process(benchmark::State& state) {
@@ -64,6 +65,7 @@ static void ThingWithCb_Process(benchmark::State& state) {
 BENCHMARK(ThingWithCb_Process<ThingWithCbAndSpinlock<CbData>>);
 BENCHMARK(ThingWithCb_Process<ThingWithCbAndSPSCQ<CbData>>);
 BENCHMARK(ThingWithCb_Process<ThingWithCbAndEyalAmirFifo<CbData>>);
+BENCHMARK(ThingWithCb_Process<ThingWithCbAndMoodycamelReaderWriterQueue<CbData>>);
 
 template<class ConcreteThingWithCb>
 static void ThingWithCb_ProcessNoContention(benchmark::State& state) {
@@ -80,3 +82,4 @@ static void ThingWithCb_ProcessNoContention(benchmark::State& state) {
 BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndSpinlock<CbData>>);
 BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndSPSCQ<CbData>>);
 BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndEyalAmirFifo<CbData>>);
+BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndMoodycamelReaderWriterQueue<CbData>>);

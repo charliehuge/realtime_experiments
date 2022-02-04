@@ -15,11 +15,24 @@ if (NOT eyal_amir_data_structures_POPULATED)
     set_target_properties(eyal_amir_guidata PROPERTIES LINKER_LANGUAGE CXX)
 endif()
 
+# grab the MoodyCamel SPSCQ
+FetchContent_Declare(
+        moodycamel_spscq
+        GIT_REPOSITORY https://github.com/cameron314/readerwriterqueue.git
+)
+FetchContent_GetProperties(moodycamel_spscq)
+if (NOT moodycamel_spscq_POPULATED)
+    FetchContent_Populate(moodycamel_spscq)
+    add_library(moodycamel_spscq INTERFACE)
+    target_include_directories(moodycamel_spscq INTERFACE ${moodycamel_spscq_SOURCE_DIR})
+    set_target_properties(moodycamel_spscq PROPERTIES LINKER_LANGUAGE CXX)
+endif()
+
 # lib
 file(GLOB src *.h *.cpp)
 add_library(${target} SHARED ${src})
 set_target_properties(${target} PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${target} common eyal_amir_guidata)
+target_link_libraries(${target} common eyal_amir_guidata moodycamel_spscq)
 
 if (MSVC)
     target_compile_options(${target} PUBLIC /W4 /WX)
