@@ -22,7 +22,7 @@ public:
     }
 
     _data[_tail] = item;
-    _tail = (++_tail) % capacity;
+    _tail = (_tail + 1) % capacity;
     _size.fetch_add(1);
     return true;
   }
@@ -33,7 +33,7 @@ public:
     }
 
     item = _data[_head];
-    _head = (++_head) % capacity;
+    _head = (_head + 1) % capacity;
     _size.fetch_sub(1);
     return true;
   }
