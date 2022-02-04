@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <functional>
+#include <Fifo.h>
 #include "../common/SPSCQ.h"
 
 template<class CbData>
@@ -79,4 +80,28 @@ protected:
 
 private:
   SPSCQ<Cb> _q;
+};
+
+template<class CbData>
+class ThingWithCbAndEyalAmirFifo : public ThingWithCb<CbData> {
+public:
+  using Cb = typename  ThingWithCb<CbData>::Cb;
+
+  void setCb(const Cb& cb) override {
+    _q.push(cb);
+  }
+
+protected:
+  using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
+
+  void useCb(const PostAcquireFiller& postAcquireFiller) override {
+    this->_cb = _q.pull();
+    if (this->_cb != nullptr) {
+      postAcquireFiller();
+      this->_cb(CbData());
+    }
+  }
+
+private:
+  EA::Fifo<Cb, 5> _q;
 };
