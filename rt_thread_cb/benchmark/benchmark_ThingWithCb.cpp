@@ -8,22 +8,25 @@ struct CbData {
   size_t c{1024};
 };
 
-template<class ConcreteThingWithCb, size_t SetUnsetCount>
+template<class ConcreteThingWithCb>
 static void ThingWithCb_SetUnset(benchmark::State& state) {
   ConcreteThingWithCb thing;
 
   std::atomic<bool> go{true};
   std::thread rtThread([&thing, &go]() {
     while (go) {
-      thing.rtProcess([]() {}, []() {});
+      thing.rtProcess([]() {
+        // spin for the specified time to simulate the audio thread doing some work before acquiring the cb
+        const auto start = std::chrono::high_resolution_clock::now();
+        const auto end = start + std::chrono::microseconds(500);
+        while (std::chrono::high_resolution_clock::now() < end);
+        }, []() {});
     }
   });
 
   for (auto _ : state) {
-    for (size_t i = 0; i < SetUnsetCount; ++i) {
-      thing.setCb([](const auto&) {});
-      thing.setCb(nullptr);
-    }
+    thing.setCb([](const auto&) {});
+    thing.setCb(nullptr);
   }
 
   go = false;
@@ -32,10 +35,11 @@ static void ThingWithCb_SetUnset(benchmark::State& state) {
   state.counters["sizeof(thing)"] = sizeof(thing);
 }
 
-BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSpinlock<CbData>, 256>);
-BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSPSCQ<CbData>, 256>);
+BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSpinlock<CbData>>);
+BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSPSCQ<CbData>>);
+BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndEyalAmirFifo<CbData>>);
 
-template<class ConcreteThingWithCb, size_t ProcessCount>
+template<class ConcreteThingWithCb>
 static void ThingWithCb_Process(benchmark::State& state) {
   ConcreteThingWithCb thing;
 
@@ -48,9 +52,7 @@ static void ThingWithCb_Process(benchmark::State& state) {
   });
 
   for (auto _: state) {
-    for (size_t i = 0; i < ProcessCount; ++i) {
-      thing.rtProcess([]() {}, []() {});
-    }
+    thing.rtProcess([]() {}, []() {});
   }
 
   go = false;
@@ -59,6 +61,22 @@ static void ThingWithCb_Process(benchmark::State& state) {
   state.counters["sizeof(thing)"] = sizeof(thing);
 }
 
-BENCHMARK(ThingWithCb_Process<ThingWithCbAndSpinlock<CbData>, 256>);
-BENCHMARK(ThingWithCb_Process<ThingWithCbAndSPSCQ<CbData>, 256>);
+BENCHMARK(ThingWithCb_Process<ThingWithCbAndSpinlock<CbData>>);
+BENCHMARK(ThingWithCb_Process<ThingWithCbAndSPSCQ<CbData>>);
+BENCHMARK(ThingWithCb_Process<ThingWithCbAndEyalAmirFifo<CbData>>);
 
+template<class ConcreteThingWithCb>
+static void ThingWithCb_ProcessNoContention(benchmark::State& state) {
+  ConcreteThingWithCb thing;
+  thing.setCb([](const auto&) {});
+
+  for (auto _: state) {
+    thing.rtProcess([]() {}, []() {});
+  }
+
+  state.counters["sizeof(thing)"] = sizeof(thing);
+}
+
+BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndSpinlock<CbData>>);
+BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndSPSCQ<CbData>>);
+BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndEyalAmirFifo<CbData>>);
