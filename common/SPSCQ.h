@@ -5,10 +5,10 @@
 #include <memory>
 
 // Bounded single producer, single consumer queue. Fails on push when full.
-template<class T>
+template<class T, size_t Capacity>
 class SPSCQ {
 public:
-  explicit SPSCQ(size_t capacity) : capacity(capacity), _data(new T[capacity]) {}
+  SPSCQ() : capacity(Capacity) {}
 
   const size_t capacity;
 
@@ -39,7 +39,7 @@ public:
   }
 
 private:
-  std::unique_ptr<T[]> _data;
+  T _data[Capacity];
   std::atomic<size_t> _size{0};
   size_t _head{0};
   size_t _tail{0};

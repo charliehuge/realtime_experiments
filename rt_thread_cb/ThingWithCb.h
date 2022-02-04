@@ -58,8 +58,6 @@ private:
 template<class CbData>
 class ThingWithCbAndSPSCQ : public ThingWithCb<CbData> {
 public:
-  explicit ThingWithCbAndSPSCQ() : _q(8) {}
-
   using Cb = typename  ThingWithCb<CbData>::Cb;
 
   void setCb(const Cb& cb) override {
@@ -79,7 +77,7 @@ protected:
   }
 
 private:
-  SPSCQ<Cb> _q;
+  SPSCQ<Cb, 5> _q;
 };
 
 template<class CbData>

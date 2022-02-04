@@ -13,7 +13,7 @@ TEST(SPSCQ, PushPop) {
   };
 
   const size_t capacity = 2048;
-  SPSCQ<Stuff> q(capacity);
+  SPSCQ<Stuff, capacity> q;
   ASSERT_EQ(q.capacity, capacity);
   ASSERT_EQ(q.size(), 0);
 

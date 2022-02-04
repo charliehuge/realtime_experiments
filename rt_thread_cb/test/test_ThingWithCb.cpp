@@ -39,3 +39,19 @@ TYPED_TEST(ThingWithCbTest, Basics) {
   go = false;
   rtThread.join();
 }
+
+// this is expected to fail for SPSCQ version
+TYPED_TEST(ThingWithCbTest, OverflowBehavior) {
+  TypeParam thing;
+
+  // we know the queue sizes are <= 8
+  for (size_t i = 0; i < 8; ++i) {
+    thing.setCb([](const CbData&) {});
+  }
+  std::atomic<bool> calledLastCb;
+  thing.setCb([&calledLastCb](const CbData&) {
+    calledLastCb = true;
+  });
+  thing.rtProcess([](){}, [](){});
+  ASSERT_TRUE(calledLastCb.load());
+}
