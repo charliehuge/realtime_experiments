@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <functional>
-#include <Fifo.h>
+#include "ea_data_structures.h"
 #include "../common/SPSCQ.h"
 
 template<class CbData>

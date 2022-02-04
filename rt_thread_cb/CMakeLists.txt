@@ -11,7 +11,7 @@ if (NOT eyal_amir_data_structures_POPULATED)
     FetchContent_Populate(eyal_amir_data_structures)
     add_library(eyal_amir_guidata INTERFACE)
     target_include_directories(eyal_amir_guidata INTERFACE
-            ${eyal_amir_data_structures_SOURCE_DIR}/ea_data_structures/Structures/)
+            ${eyal_amir_data_structures_SOURCE_DIR}/ea_data_structures/)
     set_target_properties(eyal_amir_guidata PROPERTIES LINKER_LANGUAGE CXX)
 endif()
 
