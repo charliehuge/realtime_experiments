@@ -33,7 +33,21 @@ public:
   using Cb = typename ThingWithCb<CbData>::Cb;
 
   void setCb(const Cb& cb) override {
-    while (_usingCb.test_and_set(std::memory_order::acquire));
+    // "test and test-and-set" loop
+    while (true) {
+      // try to set the flag
+      if (!_usingCb.test_and_set(std::memory_order::acquire)) {
+        break;
+      }
+      // if that fails, spin on a load to reduce cache traffic
+      while (_usingCb.test(std::memory_order::relaxed)) {
+        // save power by using the platform-specific pause instruction
+        // TODO: Find all the ones we care about and add them
+#ifdef __GNUC__
+        __builtin_ia32_pause();
+#endif
+      }
+    }
     this->_cb = cb;
     _usingCb.clear(std::memory_order::release);
   }
