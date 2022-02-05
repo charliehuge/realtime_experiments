@@ -68,8 +68,7 @@ protected:
   using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
 
   void useCb(const PostAcquireFiller& postAcquireFiller) override {
-    // drain the queue
-    while (_q.pop(this->_cb));
+    _q.popLast(this->_cb);
     if (this->_cb != nullptr) {
       postAcquireFiller();
       this->_cb(CbData());
@@ -77,7 +76,7 @@ protected:
   }
 
 private:
-  SPSCQ<Cb, 5> _q;
+  SPSCQ<Cb, 8> _q;
 };
 
 template<class CbData>
