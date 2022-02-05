@@ -33,21 +33,21 @@ public:
   using Cb = typename ThingWithCb<CbData>::Cb;
 
   void setCb(const Cb& cb) override {
-    while (_usingCb.test_and_set());
+    while (_usingCb.test_and_set(std::memory_order::acquire));
     this->_cb = cb;
-    _usingCb.clear();
+    _usingCb.clear(std::memory_order::release);
   }
 
 protected:
   using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
 
   void useCb(const PostAcquireFiller& postAcquireFiller) override {
-    if (!_usingCb.test_and_set()) {
+    if (!_usingCb.test_and_set(std::memory_order::acquire)) {
       if (this->_cb != nullptr) {
         postAcquireFiller();
         this->_cb(CbData());
       }
-      _usingCb.clear();
+      _usingCb.clear(std::memory_order::release);
     }
   }
 
