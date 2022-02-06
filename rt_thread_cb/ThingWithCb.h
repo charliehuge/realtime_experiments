@@ -1,8 +1,8 @@
 #pragma once
 
-#include <atomic>
 #include <functional>
 #include "ea_data_structures.h"
+#include "../common/SpinLock.h"
 #include "../common/SPSCQ.h"
 
 template<class CbData>
@@ -33,26 +33,26 @@ public:
   using Cb = typename ThingWithCb<CbData>::Cb;
 
   void setCb(const Cb& cb) override {
-    while (_usingCb.test_and_set(std::memory_order::acquire));
+    _spinLock.lock();
     this->_cb = cb;
-    _usingCb.clear(std::memory_order::release);
+    _spinLock.unlock();
   }
 
 protected:
   using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
 
   void useCb(const PostAcquireFiller& postAcquireFiller) override {
-    if (!_usingCb.test_and_set(std::memory_order::acquire)) {
+    if (_spinLock.tryLock()) {
       if (this->_cb != nullptr) {
         postAcquireFiller();
         this->_cb(CbData());
       }
-      _usingCb.clear(std::memory_order::release);
+      _spinLock.unlock();
     }
   }
 
 private:
-  std::atomic_flag _usingCb = ATOMIC_FLAG_INIT;
+  SpinLock _spinLock;
 };
 
 template<class CbData>
