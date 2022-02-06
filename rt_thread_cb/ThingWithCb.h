@@ -4,6 +4,7 @@
 #include "ea_data_structures.h"
 #include "../common/SpinLock.h"
 #include "../common/SPSCQ.h"
+#include "../common/Trap.h"
 
 template<class CbData>
 class ThingWithCb {
@@ -84,6 +85,30 @@ protected:
 
 private:
   SPSCQ<Cb, 2> _q;
+};
+
+template<class CbData>
+class ThingWithCbAndTrap : public ThingWithCb<CbData> {
+public:
+  using Cb = typename  ThingWithCb<CbData>::Cb;
+
+  void setCb(const Cb& cb) override {
+    _trap.trap(cb);
+  }
+
+protected:
+  using PostAcquireFiller = typename ThingWithCb<CbData>::PostAcquireFiller;
+
+  void useCb(const PostAcquireFiller& postAcquireFiller) override {
+    _trap.release(this->_cb);
+    if (this->_cb != nullptr) {
+      postAcquireFiller();
+      this->_cb(CbData());
+    }
+  }
+
+private:
+  Trap<Cb> _trap;
 };
 
 template<class CbData>

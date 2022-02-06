@@ -37,6 +37,7 @@ static void ThingWithCb_SetUnset(benchmark::State& state) {
 
 BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSpinlock<CbData>>);
 BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndSPSCQ<CbData>>);
+BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndTrap<CbData>>);
 BENCHMARK(ThingWithCb_SetUnset<ThingWithCbAndEyalAmirFifo<CbData>>);
 
 template<class ConcreteThingWithCb>
@@ -63,6 +64,7 @@ static void ThingWithCb_Process(benchmark::State& state) {
 
 BENCHMARK(ThingWithCb_Process<ThingWithCbAndSpinlock<CbData>>);
 BENCHMARK(ThingWithCb_Process<ThingWithCbAndSPSCQ<CbData>>);
+BENCHMARK(ThingWithCb_Process<ThingWithCbAndTrap<CbData>>);
 BENCHMARK(ThingWithCb_Process<ThingWithCbAndEyalAmirFifo<CbData>>);
 
 template<class ConcreteThingWithCb>
@@ -79,4 +81,5 @@ static void ThingWithCb_ProcessNoContention(benchmark::State& state) {
 
 BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndSpinlock<CbData>>);
 BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndSPSCQ<CbData>>);
+BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndTrap<CbData>>);
 BENCHMARK(ThingWithCb_ProcessNoContention<ThingWithCbAndEyalAmirFifo<CbData>>);
