@@ -33,9 +33,14 @@ public:
   using Cb = typename ThingWithCb<CbData>::Cb;
 
   void setCb(const Cb& cb) override {
-    _spinLock.lock();
-    this->_cb = cb;
-    _spinLock.unlock();
+    if (std::this_thread::get_id() == _cbThread.load(std::memory_order::acquire)) {
+      this->_cb = cb;
+    }
+    else {
+      _spinLock.lock();
+      this->_cb = cb;
+      _spinLock.unlock();
+    }
   }
 
 protected:
@@ -45,6 +50,7 @@ protected:
     if (_spinLock.tryLock()) {
       if (this->_cb != nullptr) {
         postAcquireFiller();
+        _cbThread = std::this_thread::get_id();
         this->_cb(CbData());
       }
       _spinLock.unlock();
@@ -53,6 +59,7 @@ protected:
 
 private:
   SpinLock _spinLock;
+  std::atomic<std::thread::id> _cbThread{};
 };
 
 template<class CbData>
@@ -76,7 +83,7 @@ protected:
   }
 
 private:
-  SPSCQ<Cb, 8> _q;
+  SPSCQ<Cb, 2> _q;
 };
 
 template<class CbData>

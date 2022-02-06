@@ -61,3 +61,18 @@ TYPED_TEST(ThingWithCbTest, OverflowBehavior) {
   thing.rtProcess([](){}, [](){});
   ASSERT_TRUE(calledLastCb.load());
 }
+
+TYPED_TEST(ThingWithCbTest, SetCbInCb) {
+  TypeParam thing;
+
+  std::atomic<uint8_t> cbCount{0};
+  const auto cb = [&thing, &cbCount](const CbData&) {
+    cbCount.fetch_add(1);
+    thing.setCb(nullptr);
+  };
+  thing.setCb(cb);
+  thing.rtProcess([](){}, [](){});
+  ASSERT_EQ(cbCount, 1);
+  thing.rtProcess([](){}, [](){});
+  ASSERT_EQ(cbCount, 1);
+}
