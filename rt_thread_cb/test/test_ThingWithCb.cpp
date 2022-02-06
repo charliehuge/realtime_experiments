@@ -6,6 +6,7 @@ using CbData = double;
 using TestTypes = ::testing::Types<
     ThingWithCbAndSpinlock<CbData>,
     ThingWithCbAndSPSCQ<CbData>,
+    ThingWithCbAndTrap<CbData>,
     ThingWithCbAndEyalAmirFifo<CbData>
     >;
 
@@ -41,10 +42,14 @@ TYPED_TEST(ThingWithCbTest, Basics) {
   rtThread.join();
 }
 
-// this is expected to fail for SPSCQ version
 TYPED_TEST(ThingWithCbTest, OverflowBehavior) {
+  // this is expected to fail for SPSCQ and Trap versions
   if (std::is_same<TypeParam, ThingWithCbAndSPSCQ<CbData>>::value) {
     std::cout << "skipping test for ThingWithCbAndSPSCQ because it is expected to fail" << std::endl;
+    return;
+  }
+  if (std::is_same<TypeParam, ThingWithCbAndTrap<CbData>>::value) {
+    std::cout << "skipping test for ThingWithCbAndTrap because it is expected to fail" << std::endl;
     return;
   }
 
