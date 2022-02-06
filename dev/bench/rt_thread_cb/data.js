@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1644155062966,
+  "lastUpdate": 1644163056800,
   "repoUrl": "https://github.com/charliehuge/realtime_experiments",
   "entries": {
     "rt_thread_cb Benchmark": [
@@ -390,6 +390,102 @@ window.BENCHMARK_DATA = {
             "value": 26.769610168967816,
             "unit": "ns/iter",
             "extra": "iterations: 26121830\ncpu: 26.767500592416386 ns\nthreads: 1"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "charliehuge@users.noreply.github.com",
+            "name": "Charlie Huguenard",
+            "username": "charliehuge"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "16cf56c43ca41b7ffe8302a70f18139e8af333d5",
+          "message": "add Trap, which is essentially an optimized 1-capacity bounded SPSCQ (#8)",
+          "timestamp": "2022-02-06T10:56:29-05:00",
+          "tree_id": "4d895695217788d376ec9c11cb0abb8e30398fe9",
+          "url": "https://github.com/charliehuge/realtime_experiments/commit/16cf56c43ca41b7ffe8302a70f18139e8af333d5"
+        },
+        "date": 1644163055877,
+        "tool": "googlecpp",
+        "benches": [
+          {
+            "name": "ThingWithCb_SetUnset<ThingWithCbAndSpinlock<CbData>>",
+            "value": 24.735963813695633,
+            "unit": "ns/iter",
+            "extra": "iterations: 29003017\ncpu: 24.12643484641615 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_SetUnset<ThingWithCbAndSPSCQ<CbData>>",
+            "value": 3.224129300365628,
+            "unit": "ns/iter",
+            "extra": "iterations: 217484242\ncpu: 3.2172919452251625 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_SetUnset<ThingWithCbAndTrap<CbData>>",
+            "value": 4.025889041956089,
+            "unit": "ns/iter",
+            "extra": "iterations: 174100726\ncpu: 4.0213089059720515 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_SetUnset<ThingWithCbAndEyalAmirFifo<CbData>>",
+            "value": 52.416430808426085,
+            "unit": "ns/iter",
+            "extra": "iterations: 13413071\ncpu: 52.16424337126079 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_Process<ThingWithCbAndSpinlock<CbData>>",
+            "value": 160.8485842471512,
+            "unit": "ns/iter",
+            "extra": "iterations: 4222665\ncpu: 159.80161817241023 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_Process<ThingWithCbAndSPSCQ<CbData>>",
+            "value": 228.37137513744636,
+            "unit": "ns/iter",
+            "extra": "iterations: 3328540\ncpu: 228.15132160046156 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_Process<ThingWithCbAndTrap<CbData>>",
+            "value": 39.74388210954093,
+            "unit": "ns/iter",
+            "extra": "iterations: 19906208\ncpu: 39.62085094258034 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_Process<ThingWithCbAndEyalAmirFifo<CbData>>",
+            "value": 188.08716610056433,
+            "unit": "ns/iter",
+            "extra": "iterations: 5578476\ncpu: 184.03022617646812 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_ProcessNoContention<ThingWithCbAndSpinlock<CbData>>",
+            "value": 36.16708628566535,
+            "unit": "ns/iter",
+            "extra": "iterations: 19356448\ncpu: 36.16412990647875 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_ProcessNoContention<ThingWithCbAndSPSCQ<CbData>>",
+            "value": 7.67311697867989,
+            "unit": "ns/iter",
+            "extra": "iterations: 90520324\ncpu: 7.6730624605364826 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_ProcessNoContention<ThingWithCbAndTrap<CbData>>",
+            "value": 7.231324137403661,
+            "unit": "ns/iter",
+            "extra": "iterations: 96807831\ncpu: 7.23092948957816 ns\nthreads: 1"
+          },
+          {
+            "name": "ThingWithCb_ProcessNoContention<ThingWithCbAndEyalAmirFifo<CbData>>",
+            "value": 32.96107577721631,
+            "unit": "ns/iter",
+            "extra": "iterations: 21241015\ncpu: 32.95808604249839 ns\nthreads: 1"
           }
         ]
       }
