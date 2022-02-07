@@ -1,5 +1,7 @@
 # rt_thread_cb
 
+> Many, many thanks to @eyalamirmusic and others on The Audio Programmer Discord for the ideas and inspiration!
+
 ## Use Case
 I have a MIDI processor that needs to pass some data from a method that is called from a realtime thread (usually an audio processing thread). It doesn't need to do this all the time, only when there's a listener (e.g. a GUI, which has a different lifetime).
 
@@ -34,10 +36,15 @@ Here is an example comparison on my 2019 MacBook Pro. Note that memory usage is 
 * The most flexible WRT threads. `Trap::trap()` and `Trap::release()` can be called from any number of threads.
 * set/unset not affected by how much work the user thread is doing.
 
-### Overwriting Ring Buffer Queue (thanks to Eyal Amir for offering up the code for comparison!)
+### Overwriting Ring Buffer Queue
 * About 3x the memory of a spin lock.
 * **CONSTRAINT:** set/unset can only happen from one thread.
 * set/unset not affected by how much work the user thread is doing.
+
+### Further Reading
+Here are some of the useful things I read/watched along the way:
+* [Correctly implementing a spinlock in C++ - Erik Rigtorp](https://rigtorp.se/spinlock/)
+* [Using Locks in Real-Time Audio Processing, Safely - Timur Doumler](https://www.youtube.com/watch?v=zrWYJ6FdOFQ)
 
 ## Benchmarks
 View benchmark charts here:
