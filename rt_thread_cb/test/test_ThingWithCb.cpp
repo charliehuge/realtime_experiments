@@ -81,3 +81,28 @@ TYPED_TEST(ThingWithCbTest, SetCbInCb) {
   thing.rtProcess([](){}, [](){});
   ASSERT_EQ(cbCount, 1);
 }
+
+TEST(EAFifo, Race) {
+  EA::Fifo<size_t, 4> q;
+
+  const size_t numPushThreads = 8;
+  std::vector<std::thread> pushThreads;
+  std::atomic<bool> doPush{true};
+  for (size_t i = 0; i < numPushThreads; ++i) {
+    pushThreads.emplace_back([i, &q, &doPush]() {
+      while (doPush) {
+        q.push(i);
+      }
+    });
+  }
+
+  const size_t numPops = 1000;
+  for (size_t i = 0; i < numPops; ++i) {
+    q.pull();
+  }
+
+  doPush = false;
+  for (auto& t : pushThreads) {
+    t.join();
+  }
+}
