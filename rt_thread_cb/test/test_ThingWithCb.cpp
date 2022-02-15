@@ -83,20 +83,27 @@ TYPED_TEST(ThingWithCbTest, SetCbInCb) {
 }
 
 TEST(EAFifo, Race) {
-  EA::Fifo<size_t, 4> q;
+  struct Stuff {
+    double a{123.4};
+    float b{123.4f};
+    size_t c{9};
+    Stuff* d{nullptr};
+    uint8_t e{7};
+  };
+  EA::Fifo<Stuff, 4> q;
 
-  const size_t numPushThreads = 8;
+  const size_t numPushThreads = 1;
   std::vector<std::thread> pushThreads;
   std::atomic<bool> doPush{true};
   for (size_t i = 0; i < numPushThreads; ++i) {
-    pushThreads.emplace_back([i, &q, &doPush]() {
+    pushThreads.emplace_back([&q, &doPush]() {
       while (doPush) {
-        q.push(i);
+        q.push({});
       }
     });
   }
 
-  const size_t numPops = 1000;
+  const size_t numPops = 100000;
   for (size_t i = 0; i < numPops; ++i) {
     q.pull();
   }
